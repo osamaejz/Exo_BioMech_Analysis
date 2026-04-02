@@ -4,7 +4,7 @@ subjects = ["PE004", "PE005", "PE006", "PE007", "PE008", "PE009", "PE010", "PE01
 
 for subj = 1:length(subjects)
 
-    EMG_folderPath = 'D:\PhD\Research\Exoskeleton_test\Data\EMG\' + subjects(subj); % folder that contain EMG data in csv files
+    EMG_folderPath = 'D:\PhD\Research\Exoskeleton_test\Downhill_Exo_Experiment\EMG\' + subjects(subj); % folder that contain EMG data in csv files
     EMG_fileList = dir(fullfile(EMG_folderPath, '*.csv'));
 
     for i = 1:length(EMG_fileList)
@@ -13,9 +13,9 @@ for subj = 1:length(subjects)
 
         opts = detectImportOptions(fileName,'FileType','text');
         % set the row that contains the column names
-        opts.VariableNamesLine = 4;        
-        % set the rows that contain the data (row after header to end)
-        opts.DataLines = [5 Inf];          
+        opts.VariableNamesLine = opts.VariableNamesLine + 1;        
+        % % set the rows that contain the data (row after header to end)
+        opts.DataLines = opts.DataLines +1;          
         emg_data = readtable(fileName, opts);
 
         colNames = emg_data.Properties.VariableNames;
@@ -64,7 +64,7 @@ for subj = 1:length(subjects)
     end
     disp("EMG Reading Done")
     %% Now reading kinetic/kinematic file and its relevant data extraction
-    Kin_folderPath = 'D:\PhD\Research\Exoskeleton_test\Data\C3d_excel_Export\' + subjects(subj); % folder that contain csv files
+    Kin_folderPath = 'D:\PhD\Research\Exoskeleton_test\Downhill_Exo_Experiment\C3d_Excel_Export\' + subjects(subj); % folder that contain csv files
     Kin_fileList = dir(fullfile(Kin_folderPath, '*.csv'));
 
     %% reordering UH and DH files to align with EMG files
@@ -154,7 +154,7 @@ for subj = 1:length(subjects)
         if isempty(curr_kinData)
             disp('curr_kinData is empty. Stopping execution.')
             disp(['No data in the file: ', kin_name{i}])
-            break
+            return
         end
         
         isNum = varfun(@isnumeric, curr_kinData, 'OutputFormat', 'uniform');
@@ -165,9 +165,9 @@ for subj = 1:length(subjects)
 
         % Applying condition to check for the incorrect data or abscent
         % data in kin data files
-        if ((b ~= 160) && (b ~= 169) && (b ~= 172) && (b ~= 175) && (b ~= 178) && (b ~= 181)) % checking if there is data more or less than angles(x,y,z) and moments(x,y,z) of knee and ankle joints
+        if ((b ~= 124) && (b ~= 151) && (b ~= 160) && (b ~= 169) && (b ~= 172) && (b ~= 175) && (b ~= 178) && (b ~= 181)) % checking if there is data more or less than angles(x,y,z) and moments(x,y,z) of knee and ankle joints
             disp(['incorrect data in the file: ', kin_name{i}])
-            break
+            return
         end
 
         
@@ -184,7 +184,7 @@ for subj = 1:length(subjects)
 
 
     %% Combining each subject's all data together in one structure
-    Raw_data{subj} = sub;
+    Downhill_Raw_data{subj} = sub;
 
     %% cleaning all cells for next subject
     emg_name = {};
@@ -196,7 +196,8 @@ for subj = 1:length(subjects)
 
 end
 
+
 %% saving the structure (containing all data) as a .mat file
-%save("Data/Raw_data_updated.mat", 'Raw_data')
+%save("Downhill_Data/Downhill_Raw_data.mat", 'Downhill_Raw_data')
 
 
